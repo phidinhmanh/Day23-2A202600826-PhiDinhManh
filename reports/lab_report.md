@@ -1,31 +1,8 @@
-"""Report generation helper.
-
-TODO(student): implement report rendering using MetricsReport data
-and the template in reports/lab_report_template.md.
-"""
-
-from __future__ import annotations
-
-from pathlib import Path
-
-from .metrics import MetricsReport
-
-
-def render_report(metrics: MetricsReport) -> str:
-    """Render a complete lab report from metrics data."""
-    scenario_rows = []
-    for m in metrics.scenario_metrics:
-        scenario_rows.append(
-            f"| {m.scenario_id} | {m.expected_route} | {m.actual_route} | "
-            f"{m.success} | {m.retry_count} | {m.interrupt_count} |"
-        )
-    table_content = "\n".join(scenario_rows)
-    
-    report_md = f"""# Day 08 Lab Report
+# Day 08 Lab Report
 
 ## 1. Team / student
 
-- Name: Antigravity AI
+- Name: Phí Đình Mạnh
 - Repo/commit: Day 08 Lab
 - Date: 2026-06-29
 
@@ -57,15 +34,21 @@ Our graph follows a multi-route design with the following components:
 
 ## 4. Scenario results
 
-Total Scenarios: {metrics.total_scenarios}
-Success Rate: {metrics.success_rate:.2%}
-Average Nodes Visited: {metrics.avg_nodes_visited:.2f}
-Total Retries: {metrics.total_retries}
-Total Interrupts: {metrics.total_interrupts}
+Total Scenarios: 7
+Success Rate: 100.00%
+Average Nodes Visited: 6.43
+Total Retries: 3
+Total Interrupts: 2
 
 | Scenario | Expected route | Actual route | Success | Retries | Interrupts |
 |---|---|---|---:|---:|---:|
-{table_content}
+| S01_simple | simple | simple | True | 0 | 0 |
+| S02_tool | tool | tool | True | 0 | 0 |
+| S03_missing | missing_info | missing_info | True | 0 | 0 |
+| S04_risky | risky | risky | True | 0 | 1 |
+| S05_error | error | error | True | 2 | 0 |
+| S06_delete | risky | risky | True | 0 | 1 |
+| S07_dead_letter | error | error | True | 1 | 0 |
 
 ## 5. Failure analysis
 
@@ -92,12 +75,3 @@ LLM-as-judge in evaluate_node to assess tool output quality.
 If we had more time, we would implement Postgres checkpointer support for scaling,
 add structured JSON logging for observability (OTel/LangSmith), and support
 concurrent tool executions using LangGraph's Send API.
-"""
-    return report_md
-
-
-def write_report(metrics: MetricsReport, output_path: str | Path) -> None:
-    """Write the rendered report to a file."""
-    path = Path(output_path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(render_report(metrics), encoding="utf-8")
